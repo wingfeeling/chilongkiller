@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0d0a09">
+<title>赤龍斬｜實境擴增場域</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d0a09; --ink-2:#17110f; --ink-3:#241a16;
+  --paper:#efe6d6; --paper-dim:#b9ab96; --mute:#7d6f62;
+  --cinnabar:#c8201c; --cinnabar-hi:#ff3b2a; --gold:#d9a441; --gold-hi:#f4cf74;
+  --line:rgba(217,164,65,.22);
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--ink);color:var(--paper);font-family:var(--sans);overflow:hidden;overscroll-behavior:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--gold-hi);outline-offset:3px}
+
+/* ---------- 一般畫面 ---------- */
+.screen{position:fixed;inset:0;display:none;overflow-y:auto;
+  background:
+    radial-gradient(120% 70% at 85% 0%,rgba(110,150,215,.16),transparent 60%),
+    radial-gradient(90% 60% at 0% 100%,rgba(217,164,65,.08),transparent 60%),
+    var(--ink)}
+.screen.show{display:block}
+.screen::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.wrap{position:relative;max-width:460px;margin:0 auto;min-height:100%;padding:calc(48px + var(--safe-t)) 28px calc(40px + var(--safe-b));display:flex;flex-direction:column}
+.kicker{font-size:12px;letter-spacing:.32em;color:var(--gold);text-transform:uppercase;margin:0 0 18px;display:flex;align-items:center;gap:12px}
+.kicker::after{content:"";flex:1;height:1px;background:var(--line)}
+.title{display:flex;gap:20px;align-items:flex-start;margin:6px 0 8px}
+.title h1{font-family:var(--serif);font-weight:900;font-size:96px;line-height:.95;margin:0;writing-mode:vertical-rl;letter-spacing:.06em;
+  color:var(--paper);text-shadow:0 0 40px rgba(244,207,116,.35)}
+.title h1 em{font-style:normal;color:var(--gold-hi)}
+.seal{margin-top:8px;width:64px;height:64px;border:2px solid var(--gold);color:var(--gold-hi);border-radius:6px;
+  font-family:var(--serif);font-weight:900;font-size:22px;line-height:1.05;display:grid;place-items:center;text-align:center;transform:rotate(-6deg);
+  box-shadow:inset 0 0 0 3px rgba(217,164,65,.18)}
+.title .lede{flex:1;padding-top:6px}
+.lede h2{font-family:var(--serif);font-weight:700;font-size:21px;line-height:1.45;margin:0 0 12px;color:var(--gold-hi)}
+.lede p{margin:0;font-size:14px;line-height:1.75;color:var(--paper-dim)}
+.panel{margin-top:auto;padding-top:36px;display:flex;flex-direction:column;gap:12px}
+.btn{min-height:54px;border-radius:4px;border:1px solid var(--line);background:var(--ink-2);font-size:16px;font-weight:500;letter-spacing:.08em;
+  display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s,border-color .15s,transform .1s}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:linear-gradient(180deg,#f4d27e,#c99532);border-color:var(--gold-hi);color:#1d1404;font-family:var(--serif);font-weight:900;font-size:19px;letter-spacing:.2em}
+.btn.primary:hover{background:linear-gradient(180deg,#ffe09a,#d8a43e)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;color:var(--paper-dim);letter-spacing:.1em}
+.field input{min-height:48px;border-radius:4px;border:1px solid var(--line);background:#0a0807;color:var(--paper);padding:0 14px;font:inherit;font-size:16px}
+.field input:focus{outline:none;border-color:var(--gold)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.or{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:12px;letter-spacing:.2em}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.err{min-height:20px;font-size:13px;color:#ff8a7a}
+.note{font-size:12px;line-height:1.7;color:var(--mute)}
+.steps{list-style:none;margin:28px 0 0;padding:0;border-top:1px solid var(--line)}
+.steps li{display:grid;grid-template-columns:44px 1fr;gap:4px 12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.steps b{grid-row:span 2;font-family:var(--serif);font-weight:900;font-size:26px;color:var(--gold-hi);line-height:1}
+.steps strong{font-weight:700;font-size:15px}
+.steps span{font-size:13px;color:var(--paper-dim);line-height:1.6}
+.status{font-size:13px;line-height:1.7;padding:12px 14px;border:1px solid var(--line);border-radius:4px;background:rgba(0,0,0,.25);color:var(--paper-dim)}
+.status.ok{border-color:rgba(120,200,140,.35);color:#bfe8c8}
+.status.bad{border-color:rgba(255,90,70,.35);color:#ffb3a6}
+.userline{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--paper-dim);margin-bottom:24px}
+.userline button{background:none;border:0;color:var(--gold);font-size:13px;padding:8px 0;min-height:44px}
+
+/* ---------- AR / 模擬畫面 ---------- */
+canvas.gl{position:fixed;inset:0;width:100%;height:100%;display:none;touch-action:none}
+#overlay{position:fixed;inset:0;display:none;pointer-events:none;user-select:none;-webkit-user-select:none;font-family:var(--sans)}
+#overlay>*{pointer-events:auto}
+#overlay .passthru{pointer-events:none}
+
+/* 血條（左上） */
+#hud{position:absolute;top:calc(14px + var(--safe-t));left:14px;width:min(52vw,250px);pointer-events:none;display:none}
+#hud .name{font-family:var(--serif);font-weight:900;font-size:13px;letter-spacing:.3em;color:var(--gold-hi);text-shadow:0 1px 3px #000;display:flex;justify-content:space-between;align-items:baseline}
+#hud .name span{font-family:var(--sans);font-weight:700;letter-spacing:0;font-size:20px;color:#fff;font-variant-numeric:tabular-nums}
+#hud .bar{position:relative;height:14px;margin-top:5px;background:rgba(0,0,0,.6);border:1px solid rgba(244,207,116,.7);border-radius:2px;overflow:hidden;
+  clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+#hud .bar i{position:absolute;inset:0;transform-origin:left;background:linear-gradient(180deg,#fff1b8,#e3ad3e 60%,#9a6512);transition:transform .25s ease-out}
+#hud .bar u{position:absolute;inset:0;transform-origin:left;background:#ffd8a0;transition:transform .9s .25s ease-in}
+#hud .dmg{position:absolute;right:0;top:44px;font-weight:700;font-size:22px;color:#ff5a46;text-shadow:0 2px 4px #000;opacity:0}
+#hud .dmg.pop{animation:dmg 1s ease-out}
+@keyframes dmg{0%{opacity:1;transform:translateY(0) scale(1.3)}100%{opacity:0;transform:translateY(14px) scale(1)}}
+
+/* 右上小按鈕 */
+#tools{position:absolute;top:calc(10px + var(--safe-t));right:10px;display:flex;gap:6px}
+.tool{min-width:48px;min-height:44px;padding:0 12px;border-radius:4px;border:1px solid rgba(244,207,116,.35);background:rgba(13,10,9,.62);font-size:13px;color:var(--paper);backdrop-filter:blur(6px)}
+.tool.on{background:rgba(217,164,65,.85);color:#1a1006;border-color:var(--gold-hi)}
+
+/* 掃描羅盤（上方中間） */
+#scan{position:absolute;top:calc(64px + var(--safe-t));left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;text-align:center;width:88vw;max-width:360px}
+#scan svg{width:132px;height:132px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+#scan .seg{fill:rgba(13,10,9,.5);stroke:rgba(244,207,116,.35);stroke-width:1;transition:fill .3s}
+#scan .seg.on{fill:rgba(217,164,65,.85);stroke:var(--gold-hi)}
+#scan .needle{fill:var(--gold-hi)}
+#scan .pct{font-family:var(--serif);font-weight:900;font-size:26px;fill:#fff}
+#scan .pctl{font-size:9px;fill:var(--gold-hi);letter-spacing:.2em}
+#scan .msg{font-size:14px;line-height:1.6;color:#fff;text-shadow:0 1px 4px #000,0 0 10px rgba(0,0,0,.6);background:rgba(13,10,9,.5);padding:8px 14px;border-radius:4px}
+#scan .facts{font-size:11px;color:var(--paper-dim);letter-spacing:.06em;text-shadow:0 1px 3px #000}
+#scan.done svg .seg.on{fill:rgba(127,208,255,.85)}
+
+/* 下方主按鈕 */
+#startBtn{position:absolute;left:50%;bottom:calc(26px + var(--safe-b));transform:translateX(-50%);min-width:min(78vw,320px);min-height:64px;padding:0 26px;
+  font-family:var(--serif);font-weight:900;font-size:22px;letter-spacing:.24em;border-radius:3px;
+  background:#4a4542;color:#8d8681;border:1px solid #6b6460;box-shadow:0 6px 20px rgba(0,0,0,.5);transition:background .4s,color .4s,box-shadow .4s}
+#startBtn:not(:disabled){background:linear-gradient(180deg,#f7da8c,#c38c2a);color:#1d1404;border-color:#fff1c0;
+  box-shadow:0 0 0 3px rgba(244,207,116,.25),0 0 34px rgba(255,214,120,.55),0 8px 22px rgba(0,0,0,.5);animation:breath 2.2s ease-in-out infinite}
+#startBtn:not(:disabled)::before,#startBtn:not(:disabled)::after{content:"";position:absolute;top:50%;width:10px;height:10px;border:2px solid #5a3d08;transform:translateY(-50%) rotate(45deg)}
+#startBtn::before{left:12px}#startBtn::after{right:12px}
+@keyframes breath{50%{box-shadow:0 0 0 6px rgba(244,207,116,.12),0 0 50px rgba(255,226,150,.8),0 8px 22px rgba(0,0,0,.5)}}
+
+/* 御劍術 */
+#skill{position:absolute;right:16px;bottom:calc(22px + var(--safe-b));display:none;flex-direction:column;align-items:center;gap:6px}
+#swordBtn{position:relative;width:86px;height:86px;border-radius:50%;border:2px solid var(--gold-hi);background:rgba(13,10,9,.6);display:grid;place-items:center;overflow:hidden}
+#swordBtn .cd{position:absolute;inset:0;background:conic-gradient(rgba(0,0,0,.72) var(--cd,0turn),transparent 0);transition:none}
+#swordBtn b{position:relative;font-family:var(--serif);font-weight:900;font-size:17px;line-height:1.1;color:var(--gold-hi);letter-spacing:.06em;text-shadow:0 1px 3px #000}
+#swordBtn .sec{position:absolute;bottom:12px;left:0;right:0;font-size:12px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+#swordBtn.ready{box-shadow:0 0 22px rgba(244,207,116,.65)}
+#skill small{font-size:11px;color:#fff;text-shadow:0 1px 3px #000;letter-spacing:.06em}
+#mic{position:absolute;left:16px;bottom:calc(22px + var(--safe-b));display:none;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:22px;border:1px solid rgba(244,207,116,.35);background:rgba(13,10,9,.6);font-size:13px}
+#mic i{width:10px;height:10px;border-radius:50%;background:#666}
+#mic.on i{background:#ff3b2a;box-shadow:0 0 0 4px rgba(255,59,42,.25);animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.4}}
+#heard{position:absolute;left:50%;bottom:calc(118px + var(--safe-b));transform:translateX(-50%);font-size:14px;color:#fff;text-shadow:0 1px 4px #000;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .3s}
+#heard.show{opacity:1}
+#toast{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font-family:var(--serif);font-weight:900;font-size:34px;letter-spacing:.2em;color:var(--gold-hi);
+  text-shadow:0 0 22px rgba(255,236,170,.9),0 2px 4px #000;pointer-events:none;opacity:0;white-space:nowrap}
+#toast.show{animation:toast 1.8s ease-out}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}15%{opacity:1;transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0}}
+
+/* 被擊中的紅色外圈 */
+#hurt{position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:radial-gradient(ellipse 72% 62% at 50% 50%,transparent 45%,rgba(255,20,0,.28) 70%,rgba(190,0,0,.78) 100%)}
+
+/* 模擬模式搖桿 */
+#stick{position:absolute;left:18px;bottom:calc(90px + var(--safe-b));width:112px;height:112px;border-radius:50%;border:1px solid rgba(244,207,116,.35);background:rgba(13,10,9,.35);display:none;touch-action:none}
+#stick i{position:absolute;left:36px;top:36px;width:40px;height:40px;border-radius:50%;background:rgba(244,207,116,.55)}
+#simHelp{position:absolute;left:14px;top:calc(70px + var(--safe-t));font-size:11px;color:var(--paper-dim);text-shadow:0 1px 3px #000;pointer-events:none;display:none;max-width:44vw;line-height:1.6}
+
+/* 死亡 / 勝利 */
+#dead,#won{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:36px;text-align:center}
+#dead{background:rgba(20,20,20,.55);-webkit-backdrop-filter:grayscale(1) brightness(.75);backdrop-filter:grayscale(1) brightness(.75)}
+#dead.show,#won.show{display:flex;animation:fadein .8s ease-out}
+@keyframes fadein{from{opacity:0}}
+#dead h2{margin:0;font-family:var(--serif);font-weight:900;font-size:clamp(34px,10vw,54px);letter-spacing:.18em;color:#e8e8e8;text-shadow:0 3px 12px #000}
+#dead h2 small{display:block;font-size:13px;letter-spacing:.5em;color:#9a9a9a;margin-top:14px;font-weight:500}
+#again{min-width:200px;min-height:56px;border-radius:3px;border:1px solid #bbb;background:rgba(0,0,0,.5);color:#fff;font-family:var(--serif);font-weight:900;font-size:20px;letter-spacing:.3em}
+#won{background:radial-gradient(circle at 50% 45%,rgba(255,236,170,.3),rgba(8,10,16,.72) 70%)}
+#won h2{margin:0;font-family:var(--serif);font-weight:900;font-size:clamp(36px,11vw,60px);letter-spacing:.2em;color:var(--gold-hi);text-shadow:0 0 30px rgba(255,236,170,.8),0 3px 8px #000}
+#won p{margin:0;font-size:14px;color:var(--paper-dim)}
+#won .row{gap:10px;display:flex}
+#won button,#won a{min-height:52px;padding:0 22px;border-radius:3px;border:1px solid var(--gold);background:rgba(0,0,0,.5);font-size:16px;color:var(--paper);display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+#won #chronicle{background:linear-gradient(180deg,#f7da8c,#c38c2a);color:#1d1404;border-color:#fff1c0;font-family:var(--serif);font-weight:900;font-size:19px;letter-spacing:.12em;box-shadow:0 0 30px rgba(255,226,150,.6)}
+#won .col{display:flex;flex-direction:column;gap:12px;align-items:center}
+/* 密技回血的金光 */
+#heal{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse 80% 70% at 50% 55%,rgba(255,240,180,.45),rgba(255,210,110,.18) 55%,rgba(255,200,80,0) 80%)}
+
+/* ---------- 故事開場 ---------- */
+#storyScr{background:#000;overflow:hidden}
+#storyScr::before{display:none}
+.st-stage{position:absolute;inset:0;display:flex;align-items:center;overflow:hidden}
+#stPan{position:relative;flex:none;height:max(100%,calc(100vw / 1.5));aspect-ratio:3/2;transform-origin:70% 50%;will-change:transform}
+#stPan img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+#stFx,#stGL{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#stGL{visibility:hidden}
+.st-label{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;font-family:var(--serif);font-weight:900;font-size:clamp(13px,1.9vh,19px);letter-spacing:.18em;padding:5px 10px 5px 12px;
+  border:1px solid;border-radius:2px;background:rgba(0,0,0,.58);opacity:0;transition:opacity 1.4s ease}
+.st-label.good{color:#fff0bd;border-color:rgba(255,226,150,.75);box-shadow:0 0 16px rgba(255,220,140,.35)}
+.st-label.bad{color:#ffb0a2;border-color:rgba(255,90,70,.65)}
+.st-label.show{opacity:1}
+.st-shade{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(0,0,0,.5) 0%,rgba(0,0,0,0) 18%,rgba(0,0,0,0) 40%,rgba(0,0,0,.55) 62%,rgba(0,0,0,.85) 100%),radial-gradient(130% 90% at 50% 45%,transparent 55%,rgba(0,0,0,.6) 100%)}
+#crawlBox{position:absolute;left:0;right:0;bottom:44px;height:58%;overflow:hidden;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 22%,#000 84%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 22%,#000 84%,transparent 100%)}
+#crawl{max-width:560px;margin:0 auto;padding:0 28px;text-align:center;font-family:var(--serif);font-weight:700;font-size:clamp(19px,2.8vh,28px);line-height:1.85;letter-spacing:.06em;color:#fff6e2;
+  text-shadow:0 2px 6px #000,0 0 22px rgba(0,0,0,.95);will-change:transform;transform:translateY(100vh)}
+#crawl p{margin:0 0 1em}
+#crawl .big{font-size:1.25em;color:#ffe39a;letter-spacing:.14em}
+.st-top{position:absolute;top:calc(12px + var(--safe-t));left:12px;right:12px;display:flex;justify-content:space-between;gap:8px}
+.st-top button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid rgba(255,236,170,.45);background:rgba(0,0,0,.5);color:#fff3d6;font-size:14px;backdrop-filter:blur(4px)}
+#stEnd{position:absolute;left:0;right:0;bottom:calc(30px + var(--safe-b));display:flex;flex-direction:column;align-items:center;gap:12px;opacity:0;pointer-events:none;transition:opacity 1.6s ease}
+#stEnd.show{opacity:1;pointer-events:auto}
+#stEnd p{margin:0;font-size:14px;color:#fff0c8;text-shadow:0 1px 4px #000;letter-spacing:.06em}
+#stEnd p b{font-size:20px;color:#ffe39a}
+#beginBtn{min-width:min(80vw,320px);min-height:64px;border-radius:3px;border:1px solid #fff1c0;background:linear-gradient(180deg,#f7da8c,#c38c2a);color:#1d1404;
+  font-family:var(--serif);font-weight:900;font-size:24px;letter-spacing:.3em;box-shadow:0 0 0 3px rgba(244,207,116,.25),0 0 40px rgba(255,226,150,.6);animation:breath 2.2s ease-in-out infinite}
+.st-credit{position:absolute;left:0;right:0;bottom:0;margin:0;padding:14px 12px calc(6px + var(--safe-b));background:linear-gradient(to bottom,rgba(0,0,0,0),rgba(0,0,0,.85) 45%);text-align:center;font-size:10px;line-height:1.5;color:rgba(255,240,210,.62);text-shadow:0 1px 3px #000;letter-spacing:.03em}
+.st-credit a{color:rgba(255,226,150,.85)}
+#stEnd{bottom:calc(52px + var(--safe-b))!important}
+.hpinfo{font-size:14px;color:var(--paper-dim);display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:4px;background:rgba(0,0,0,.25)}
+.hpinfo b{color:var(--gold-hi);font-size:18px}
+.hpinfo button{flex:none;background:none;border:1px solid var(--line);border-radius:3px;color:var(--gold-hi);min-height:40px;padding:0 12px;font-size:13px}
+@media (prefers-reduced-motion:reduce){#startBtn:not(:disabled),#beginBtn{animation:none}}
+</style>
+</head>
+<body>
+
+<!-- 登入 -->
+<section id="loginScr" class="screen show" aria-labelledby="t1">
+  <div class="wrap">
+    <p class="kicker">實境擴增場域座標系統</p>
+    <div class="title">
+      <h1 id="t1">赤<em>龍</em>斬</h1>
+      <div class="lede">
+        <div class="seal" aria-hidden="true">滅<br>邪</div>
+        <h2 style="margin-top:22px">以周遭真實景物為座標，<br>在你眼前斬龍。</h2>
+      </div>
+    </div>
+    <form class="panel" id="loginForm" novalidate>
+      <div id="fbArea" style="display:none;flex-direction:column;gap:12px">
+        <button type="button" class="btn" id="gLogin">用 Google 帳號登入</button>
+        <div class="or">或用 Email</div>
+        <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email" inputmode="email"></div>
+        <div class="field"><label for="pw">密碼（至少 6 個字元）</label><input id="pw" type="password" autocomplete="current-password"></div>
+        <div class="row"><button type="submit" class="btn primary" id="eLogin">登入</button><button type="button" class="btn" id="eSignup">註冊</button></div>
+        <div class="or">或</div>
+      </div>
+      <button type="button" class="btn ghost" id="guest">以訪客身分進入</button>
+      <div class="err" id="loginErr" role="alert"></div>
+      <p class="note" id="loginNote"></p>
+    </form>
+  </div>
+</section>
+
+<!-- 故事開場 -->
+<section id="storyScr" class="screen" aria-label="赤龍斬的故事">
+  <div class="st-stage">
+    <div id="stPan">
+      <img id="stImg" crossorigin="anonymous" src="img/story-v2.jpg" alt="右邊是沐浴在金光中、單掌立於胸前的大法弟子；左邊是肩上趴著癩蝦蟆精的迫害元兇、610 辦公室的人員和地獄小鬼，背後是一條用紅線操控著他們的紅色邪龍；底下是中國地圖">
+      <canvas id="stGL" aria-hidden="true"></canvas>
+      <canvas id="stFx" aria-hidden="true"></canvas>
+      <span class="st-label good" style="left:76%;top:17%" data-at="0.06">大法弟子</span>
+      <span class="st-label bad" style="left:31%;top:21%" data-at="0.3">迫害元兇</span>
+      <span class="st-label bad" style="left:15%;top:23%" data-at="0.34">癩蝦蟆精</span>
+      <span class="st-label bad" style="left:47%;top:31%" data-at="0.38">610 辦公室</span>
+      <span class="st-label bad" style="left:24%;top:58%" data-at="0.42">地獄小鬼</span>
+      <span class="st-label bad" style="left:52%;top:9%" data-at="0.52">邪龍</span>
+    </div>
+  </div>
+  <div class="st-shade"></div>
+  <div id="crawlBox">
+    <div id="crawl">
+      <p class="big">這是一段真實故事。</p>
+      <p>1999 年 7 月 20 日，<br>中共開始迫害法輪功學員。</p>
+      <p>一億的大法弟子<br>面對殘酷的鎮壓，<br>大善大忍的胸懷，<br>令人感佩。</p>
+      <p>然而，這場迫害的背後，<br>卻是一隻邪龍<br>在控制著這場迫害。</p>
+      <p class="big">勇者啊，</p>
+      <p>你是否願意拿起滅邪之劍，<br>幫助大法弟子，<br>一起將赤龍斬除？</p>
+    </div>
+  </div>
+  <div class="st-top"><button id="muteBtn" aria-pressed="false">♪ 配樂：開</button><button id="skipStory">跳過故事</button></div>
+  <p class="st-credit">配樂：管樂合奏《不良思緒漸漸散去》（Bad Thoughts Fade Away）　作曲：Peter Bruno<br>音樂來源：<a href="https://big5.zhengjian.org/node/305115" target="_blank" rel="noopener">正見網・天音網</a>　正見網版權所有 ©1999-2026 ZHENGJIAN.ORG</p>
+  <audio id="storyBgm" src="audio/bad-thoughts-fade-away.mp3" preload="auto" loop></audio>
+  <div id="stEnd">
+    <p>看完故事，你的血量提升為 <b>425</b></p>
+    <button id="beginBtn">赤龍斬開始</button>
+  </div>
+</section>
+
+<!-- 首頁 -->
+<section id="homeScr" class="screen" aria-labelledby="t2">
+  <div class="wrap">
+    <div class="userline"><span id="who"></span><button id="logout">登出</button></div>
+    <p class="kicker">赤龍斬行動　作戰須知</p>
+    <h2 id="t2" style="font-family:var(--serif);font-weight:900;font-size:34px;line-height:1.3;margin:0">站到空曠處，<br>面向龍要出現的方向。</h2>
+    <ol class="steps">
+      <li><b>一</b><strong>環場建模</strong><span>拿著手機原地慢慢轉一圈，把地面和周遭景物都拍進來。上方羅盤十二格全亮就完成了。</span></li>
+      <li><b>二</b><strong>赤龍斬行動開始</strong><span>按下按鈕，邪龍會出現在你前方約 10 公尺。牠每 6 秒吐一次火球，閃開它。邪龍血量剩一半以下時，會一次吐出三顆散開的火球。</span></li>
+      <li><b>三</b><strong>喊出「御劍術」</strong><span>寶劍會從手機下方，朝鏡頭方向飛出。打中龍胸前的鎌刀鎚子標誌傷害最大，每 5 秒可以用一次。</span></li>
+    </ol>
+    <div class="panel">
+      <div class="hpinfo"><span id="hpInfo"></span><button id="replayStory">重看故事</button></div>
+      <div class="status" id="support">檢查這支手機能不能用 AR…</div>
+      <button class="btn" id="micBtn">允許麥克風（喊「御劍術」用）</button>
+      <button class="btn primary" id="arBtn" disabled>進入 AR 場域</button>
+      <button class="btn ghost" id="simBtn">在模擬場景試玩（電腦／iPhone）</button>
+      <p class="note">故事配樂：管樂合奏《不良思緒漸漸散去》（Bad Thoughts Fade Away），作曲 Peter Bruno，取自 <a href="https://big5.zhengjian.org/node/305115" target="_blank" rel="noopener" style="color:var(--gold)">正見網・天音網</a>，正見網版權所有 ©1999-2026 ZHENGJIAN.ORG。</p>
+      <p class="note">戰鬥配樂：原創武俠風戰鬥曲（笛子、琵琶、二胡、弦樂、戰鼓），本遊戲專用。</p>
+      <p class="note">AR 需要 Android 手機的 Chrome，並安裝「Google Play Services for AR」。iPhone 的瀏覽器目前不支援網頁 AR，只能用模擬場景試玩。</p>
+    </div>
+  </div>
+</section>
+
+<canvas class="gl" id="gl"></canvas>
+
+<!-- AR 畫面上的介面（WebXR dom-overlay） -->
+<div id="overlay">
+  <div id="hurt" class="passthru"></div>
+  <div id="heal" class="passthru"></div>
+  <div id="hud" class="passthru">
+    <div class="name">斬龍者<span id="hpNum">100</span></div>
+    <div class="bar" role="meter" aria-label="生命值" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="hpBar"><u id="hpLag"></u><i id="hpFill"></i></div>
+    <div class="dmg" id="hpDmg"></div>
+  </div>
+  <div id="tools"><button class="tool" id="modelBtn" aria-pressed="false">模型</button><button class="tool" id="exitBtn">離開</button></div>
+  <div id="scan" class="passthru">
+    <svg viewBox="-70 -70 140 140" aria-hidden="true"><g id="segs"></g><polygon class="needle" id="needle" points="0,-64 -5,-54 5,-54"/>
+      <text class="pct" id="scanPct" y="6" text-anchor="middle">0</text><text class="pctl" y="22" text-anchor="middle">建模％</text></svg>
+    <div class="msg" id="scanMsg">慢慢原地轉一圈，把四周拍進來</div>
+    <div class="facts" id="scanFacts"></div>
+  </div>
+  <div id="toast" class="passthru"></div>
+  <div id="heard" class="passthru"></div>
+  <div id="stick"><i></i></div>
+  <div id="simHelp" class="passthru">拖曳畫面轉頭・WASD／搖桿移動・空白鍵＝御劍術</div>
+  <button id="startBtn" disabled>赤龍斬行動開始</button>
+  <button id="mic" aria-pressed="false"><i></i><span id="micTxt">語音：關</span></button>
+  <div id="skill"><button id="swordBtn" aria-label="施放御劍術"><span class="cd" id="swordCd"></span><b>御劍術</b><span class="sec" id="swordSec"></span></button><small>說「御劍術」</small></div>
+  <div id="dead" role="alertdialog" aria-labelledby="deadT"><h2 id="deadT">你被迫害死了<small>GAME OVER</small></h2><button id="again">再一次</button></div>
+  <div id="won" role="alertdialog" aria-labelledby="wonT"><h2 id="wonT">赤龍已斬</h2><p>感謝勇者，與大法弟子一起斬除了邪龍</p>
+    <div class="col"><a id="chronicle" href="https://www.ntdtv.com/gb/2024/07/19/a103898587.html" target="_blank" rel="noopener">法輪功大事記</a><button id="wonAgain">再戰一次</button></div></div>
+</div>
+
+<script src="js/config.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+               "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module" src="js/game.js"></script>
+</body>
+</html>
