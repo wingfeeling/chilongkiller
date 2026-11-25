@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0d0a09">
 <title>赤龍斬｜實境擴增場域</title>
+<meta name="author" content="wingfeeling">
+<meta name="copyright" content="© 2026 wingfeeling">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -155,8 +157,12 @@ canvas.gl{position:fixed;inset:0;width:100%;height:100%;display:none;touch-actio
 #dead h2 small{display:block;font-size:13px;letter-spacing:.5em;color:#9a9a9a;margin-top:14px;font-weight:500}
 #again{min-width:200px;min-height:56px;border-radius:3px;border:1px solid #bbb;background:rgba(0,0,0,.5);color:#fff;font-family:var(--serif);font-weight:900;font-size:20px;letter-spacing:.3em}
 #won{background:radial-gradient(circle at 50% 45%,rgba(255,236,170,.3),rgba(8,10,16,.72) 70%)}
-#won h2{margin:0;font-family:var(--serif);font-weight:900;font-size:clamp(36px,11vw,60px);letter-spacing:.2em;color:var(--gold-hi);text-shadow:0 0 30px rgba(255,236,170,.8),0 3px 8px #000}
-#won p{margin:0;font-size:14px;color:var(--paper-dim)}
+#won{padding:24px 22px;gap:28px;overflow-y:auto}
+#won h2{margin:0;font-family:var(--serif);font-weight:900;font-size:clamp(56px,17vw,96px);letter-spacing:.24em;text-indent:.24em;color:var(--gold-hi);text-shadow:0 0 30px rgba(255,236,170,.8),0 3px 8px #000}
+#won p{margin:-12px 0 0;max-width:520px;text-wrap:pretty;font-family:var(--serif);font-weight:700;font-size:clamp(18px,4.8vw,24px);line-height:1.8;letter-spacing:.04em;color:#fff3d6;text-shadow:0 2px 6px #000,0 0 18px rgba(0,0,0,.9)}
+#won .nw{white-space:nowrap}
+#won h2+p{margin-top:0}
+#won p.copy{margin-top:0;font-family:inherit;font-weight:400;font-size:12px;color:rgba(255,240,210,.6);letter-spacing:.06em}
 #won .row{gap:10px;display:flex}
 #won button,#won a{min-height:52px;padding:0 22px;border-radius:3px;border:1px solid var(--gold);background:rgba(0,0,0,.5);font-size:16px;color:var(--paper);display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
 #won #chronicle{background:linear-gradient(180deg,#f7da8c,#c38c2a);color:#1d1404;border-color:#fff1c0;font-family:var(--serif);font-weight:900;font-size:19px;letter-spacing:.12em;box-shadow:0 0 30px rgba(255,226,150,.6)}
@@ -199,6 +205,15 @@ canvas.gl{position:fixed;inset:0;width:100%;height:100%;display:none;touch-actio
 .hpinfo{font-size:14px;color:var(--paper-dim);display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:4px;background:rgba(0,0,0,.25)}
 .hpinfo b{color:var(--gold-hi);font-size:18px}
 .hpinfo button{flex:none;background:none;border:1px solid var(--line);border-radius:3px;color:var(--gold-hi);min-height:40px;padding:0 12px;font-size:13px}
+#micHelp{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72)}
+#micHelp.show{display:flex}
+#micHelp .box{max-width:400px;width:100%;background:var(--ink-2,#151821);border:1px solid var(--gold,#c99532);border-radius:6px;padding:22px 22px 18px;color:var(--paper,#f3ead6)}
+#micHelp h3{margin:0 0 10px;font-family:var(--serif);font-size:22px;color:var(--gold-hi,#ffe39a)}
+#micHelp p,#micHelp li{font-size:15px;line-height:1.7}
+#micHelp ol{margin:8px 0 16px;padding-left:1.4em}
+#micHelp .act{display:flex;flex-direction:column;gap:10px}
+.sitecopy{position:fixed;left:0;right:0;bottom:calc(4px + var(--safe-b));z-index:20;text-align:center;font-size:11px;color:rgba(255,240,210,.5);pointer-events:none;letter-spacing:.06em}
+body.playing .sitecopy,body.story .sitecopy{display:none}
 @media (prefers-reduced-motion:reduce){#startBtn:not(:disabled),#beginBtn{animation:none}}
 </style>
 </head>
@@ -258,7 +273,7 @@ canvas.gl{position:fixed;inset:0;width:100%;height:100%;display:none;touch-actio
     </div>
   </div>
   <div class="st-top"><button id="muteBtn" aria-pressed="false">♪ 配樂：開</button><button id="skipStory">跳過故事</button></div>
-  <p class="st-credit">配樂：管樂合奏《不良思緒漸漸散去》（Bad Thoughts Fade Away）　作曲：Peter Bruno<br>音樂來源：<a href="https://big5.zhengjian.org/node/305115" target="_blank" rel="noopener">正見網・天音網</a>　正見網版權所有 ©1999-2026 ZHENGJIAN.ORG</p>
+  <p class="st-credit">配樂：管樂合奏《不良思緒漸漸散去》（Bad Thoughts Fade Away）　作曲：Peter Bruno<br>音樂來源：<a href="https://big5.zhengjian.org/node/305115" target="_blank" rel="noopener">正見網・天音網</a>　正見網版權所有 ©1999-2026 ZHENGJIAN.ORG<br>本網站 © 2026 wingfeeling 版權所有</p>
   <audio id="storyBgm" src="audio/bad-thoughts-fade-away.mp3" preload="auto" loop></audio>
   <div id="stEnd">
     <p>看完故事，你的血量提升為 <b>425</b></p>
@@ -290,6 +305,14 @@ canvas.gl{position:fixed;inset:0;width:100%;height:100%;display:none;touch-actio
   </div>
 </section>
 
+<div id="micHelp" role="dialog" aria-modal="true" aria-labelledby="micHelpT"><div class="box">
+  <h3 id="micHelpT">需要允許麥克風</h3>
+  <p id="micHelpMsg">麥克風先前被拒絕了，瀏覽器不會再自動詢問。請照下面的步驟打開：</p>
+  <ol><li>點網址列左邊的 <b>ⓘ／鎖頭／調整</b> 圖示</li><li>選「<b>權限</b>」或「<b>網站設定</b>」</li><li>把「<b>麥克風</b>」改成「<b>允許</b>」</li><li>回到這裡按「重新要求權限」</li></ol>
+  <div class="act"><button class="btn primary" id="micRetry">重新要求權限</button><button class="btn ghost" id="micClose">先不用</button></div>
+</div></div>
+<footer class="sitecopy">© 2026 wingfeeling　版權所有</footer>
+
 <canvas class="gl" id="gl"></canvas>
 
 <!-- AR 畫面上的介面（WebXR dom-overlay） -->
@@ -316,8 +339,9 @@ canvas.gl{position:fixed;inset:0;width:100%;height:100%;display:none;touch-actio
   <button id="mic" aria-pressed="false"><i></i><span id="micTxt">語音：關</span></button>
   <div id="skill"><button id="swordBtn" aria-label="施放御劍術"><span class="cd" id="swordCd"></span><b>御劍術</b><span class="sec" id="swordSec"></span></button><small>說「御劍術」</small></div>
   <div id="dead" role="alertdialog" aria-labelledby="deadT"><h2 id="deadT">你被迫害死了<small>GAME OVER</small></h2><button id="again">再一次</button></div>
-  <div id="won" role="alertdialog" aria-labelledby="wonT"><h2 id="wonT">赤龍已斬</h2><p>感謝勇者，與大法弟子一起斬除了邪龍</p>
-    <div class="col"><a id="chronicle" href="https://www.ntdtv.com/gb/2024/07/19/a103898587.html" target="_blank" rel="noopener">法輪功大事記</a><button id="wonAgain">再戰一次</button></div></div>
+  <div id="won" role="alertdialog" aria-labelledby="wonT"><h2 id="wonT">赤龍斬</h2><p>感謝勇者願意站出來一起斬除邪龍，但在現實中，中共現在仍在迫害<span class="nw">大法弟子。</span></p><p>您要能了解法輪功真相是大法弟子的<span class="nw">願望，</span>希望您可以花一點時間看一下<span class="nw">法輪功大事記。</span></p>
+    <div class="col"><a id="chronicle" href="https://www.ntdtv.com/gb/2024/07/19/a103898587.html" target="_blank" rel="noopener">法輪功大事記</a></div>
+    <p class="copy">© 2026 wingfeeling　版權所有</p></div>
 </div>
 
 <script src="js/config.js"></script>

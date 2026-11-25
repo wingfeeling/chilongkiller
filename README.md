@@ -21,3 +21,6 @@ AR 和麥克風都需要 https，GitHub Pages 本身就是 https。
 ## 配樂
 - 故事配樂：管樂合奏《不良思緒漸漸散去》（Bad Thoughts Fade Away），作曲 Peter Bruno，音樂來源：正見網・天音網（https://big5.zhengjian.org/node/305115），正見網版權所有 ©1999-2026 ZHENGJIAN.ORG
 - 戰鬥配樂：原創武俠風戰鬥曲，本遊戲專用
+
+## 版權
+© 2026 wingfeeling 版權所有

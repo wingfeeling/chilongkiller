@@ -53,7 +53,7 @@ $('eSignup').onclick = async () => { try { await fb.au.createUserWithEmailAndPas
 $('guest').onclick = () => { initAudio(); enterHome({ name: '訪客', fb: false }); };
 $('logout').onclick = async () => { if (user?.fb && fb) await fb.au.signOut(fb.auth); user = null; show('loginScr'); };
 $('replayStory').onclick = () => { initAudio(); startStory(); };
-function show(id) { for (const s of document.querySelectorAll('.screen')) s.classList.toggle('show', s.id === id); }
+function show(id) { for (const s of document.querySelectorAll('.screen')) s.classList.toggle('show', s.id === id);  document.body.classList.toggle('story', id === 'storyScr'); }
 function enterHome(u) { user = u; $('who').textContent = '斬龍者：' + u.name; startStory(); }
 function toHome() {
   show('homeScr'); checkMic();
@@ -77,7 +77,7 @@ const StoryMusic = (() => {
     }, 60);
   };
   return {
-    start() { want = 0.85; if (a.paused) { if (a.ended || a.currentTime > a.duration - 1) a.currentTime = 0; a.play().catch(() => {}); } step(); },
+    start(vol = 0.85) { want = vol; if (a.paused) { if (a.ended || a.currentTime > a.duration - 1) a.currentTime = 0; a.play().catch(() => {}); } step(); },
     stop() { want = 0; step(); },
     restart() { a.currentTime = 0; this.start(); },
     mute(m) { muted = m; if (!m && want > 0 && a.paused) a.play().catch(() => {}); step(); },
@@ -277,15 +277,34 @@ async function checkMic() {
   showMicPerm();
 }
 function showMicPerm() {
-  const b = $('micBtn');
-  if (micPerm === 'granted') { b.textContent = '麥克風已允許'; b.disabled = true; }
-  else if (micPerm === 'denied') { b.textContent = '麥克風被封鎖了：請到網址列左邊的圖示 →「權限」打開'; b.disabled = true; }
+  const b = $('micBtn'); b.disabled = false;
+  if (micPerm === 'granted') { b.textContent = '✓ 麥克風已允許'; b.disabled = true; $('micHelp').classList.remove('show'); }
+  else if (micPerm === 'denied') b.textContent = '麥克風被封鎖：點這裡重新允許';
+  else b.textContent = '允許麥克風（喊「御劍術」用）';
 }
-$('micBtn').onclick = async () => {
-  try { const s = await navigator.mediaDevices.getUserMedia({ audio: true }); s.getTracks().forEach(t => t.stop()); micPerm = 'granted'; }
-  catch { micPerm = 'denied'; }
-  showMicPerm();
-};
+/* 跳出瀏覽器的「允許使用麥克風」視窗。要在使用者點按時呼叫；進入 AR 之後瀏覽器不會跳視窗，所以進 AR 前先問 */
+async function askMic(showHelp = true) {
+  if (!SR || !navigator.mediaDevices?.getUserMedia) return false;
+  if (micPerm === 'granted') return true;
+  try {
+    const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+    s.getTracks().forEach(t => t.stop()); micPerm = 'granted'; showMicPerm(); return true;
+  } catch (e) {
+    let st = 'denied'; try { st = (await navigator.permissions.query({ name: 'microphone' })).state; } catch {}
+    micPerm = st; showMicPerm();
+    if (showHelp) {
+      $('micHelpMsg').textContent = e && e.name === 'NotFoundError' ? '找不到麥克風，請確認手機或電腦有麥克風。'
+        : st === 'denied' ? '麥克風先前被拒絕了，瀏覽器不會再自動詢問。請照下面的步驟打開：'
+        : '剛剛沒有允許麥克風。請再按一次「重新要求權限」，在跳出的視窗選「允許」。';
+      $('micHelp').querySelector('ol').style.display = st === 'denied' ? '' : 'none';
+      $('micHelp').classList.add('show');
+    }
+    return false;
+  }
+}
+$('micBtn').onclick = () => askMic(true);
+$('micRetry').onclick = async () => { $('micHelp').classList.remove('show'); if (!(await askMic(true)) && micPerm === 'denied') location.reload(); };
+$('micClose').onclick = () => $('micHelp').classList.remove('show');
 
 /* ================= three.js 場景 ================= */
 const canvas = $('gl');
@@ -786,8 +805,11 @@ function renderHP(dmg) {
 /* ================= 遊戲狀態 ================= */
 const S = { mode: 'none', phase: 'none', hp: RULE.hpSkip, maxHP: RULE.hpSkip, watched: false, swordWasReady: true, grayTarget: 0 };
 function setPhase(p) {
-  S.phase = p;
+  const prevPhase = S.phase; S.phase = p;
   if (p === 'battle') BattleMusic.start(); else BattleMusic.stop(p === 'won' ? 3 : 1.5);   // 戰鬥配樂
+  // 結束畫面：小聲循環播放開場故事的配樂；離開結束畫面就停
+  if (p === 'won') { $('storyBgm').loop = true; $('storyBgm').currentTime = 0; StoryMusic.start(0.3); } else if (prevPhase === 'won') StoryMusic.stop();
+  document.body.classList.toggle('playing', p !== 'none');
   $('scan').style.display = p === 'scan' || p === 'ready' ? '' : 'none';
   $('startBtn').style.display = p === 'scan' || p === 'ready' ? '' : 'none';
   $('hud').style.display = p === 'battle' || p === 'dead' ? 'block' : 'none';
@@ -818,7 +840,6 @@ function backToStart() {       // 「再一次」：回到建模完成、按鈕�
   setPhase('ready'); $('startBtn').disabled = !scan.done;
 }
 $('again').addEventListener('click', backToStart);
-$('wonAgain').addEventListener('click', backToStart);
 
 /* ---------- 小提示 ---------- */
 function toast(t) { const e = $('toast'); e.textContent = t; e.classList.remove('show'); void e.offsetWidth; e.classList.add('show'); }
@@ -854,14 +875,14 @@ function listen() {
       }
     };
     rec.onerror = ev => {
-      if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') { stopVoice(); $('micTxt').textContent = '語音：沒有麥克風權限'; }
+      if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') { stopVoice(); $('micTxt').textContent = '語音：沒有麥克風權限（點這裡允許）'; micPerm = 'unknown'; }
     };
     rec.onend = () => { if (voiceOn) setTimeout(listen, 250); };
     rec.start();
   } catch { setTimeout(listen, 1000); }
 }
 function stopVoice() { voiceOn = false; try { rec?.stop(); } catch {} rec = null; $('mic').classList.remove('on'); $('micTxt').textContent = '語音：關'; $('mic').setAttribute('aria-pressed', 'false'); }
-$('mic').addEventListener('click', () => { initAudio(); voiceOn ? stopVoice() : startVoice(); });
+$('mic').addEventListener('click', async () => { initAudio(); if (voiceOn) return stopVoice(); if (micPerm !== 'granted' && !(await askMic(!session))) return; startVoice(); });
 
 /* ================================================================
    模擬場景（電腦／iPhone 試玩用）：一個假的戶外廣場
@@ -966,7 +987,7 @@ function prewarm() {
   setTimeout(() => { camera.remove(hold, fb.g); d.dispose(); fb.g.children[1].material.dispose(); }, 600);
 }
 $('simBtn').addEventListener('click', () => {
-  initAudio(); buildSim(); sim.group.visible = true;
+  initAudio(); if (SR && micPerm !== 'granted') askMic(false); buildSim(); sim.group.visible = true;
   sim.yaw = 0; sim.pitch = -0.15; camera.position.set(0, 1.45, 0); camera.fov = 65; camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   updateSimCamera(0); camFwd.set(0, 0, -1);
   canvas.style.display = 'block';
@@ -978,6 +999,7 @@ $('simBtn').addEventListener('click', () => {
 let session = null, refSpace = null, hitSource = null, depthOn = false, glBinding = null, camOn = false, frameN = 0;
 $('arBtn').addEventListener('click', async () => {
   initAudio();
+  if (SR && micPerm !== 'granted') await askMic(false);   // 進 AR 前先跳出麥克風權限視窗
   const base = { requiredFeatures: ['hit-test'], optionalFeatures: ['dom-overlay', 'plane-detection', 'camera-access', 'anchors'], domOverlay: { root: $('overlay') } };
   $('overlay').style.display = 'block';
   try {
