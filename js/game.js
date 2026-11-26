@@ -30,7 +30,7 @@ const CELL = 0.4, OCC_N = 2.5, SECTORS = 12;
 let fb = null, user = null;
 (async () => {
   const cfg = window.FIREBASE_CONFIG;
-  if (!cfg) { $('loginNote').textContent = '正式帳號登入還沒設定，目前先用訪客身分遊玩。'; return; }
+  if (!cfg) return;
   try {
     const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
     const [app, au] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-auth.js')]);
@@ -38,7 +38,7 @@ let fb = null, user = null;
     fb = { au, auth };
     $('fbArea').style.display = 'flex';
     au.onAuthStateChanged(auth, u => { if (u) enterHome({ name: u.displayName || u.email || '斬龍者', fb: true }); });
-  } catch (e) { $('loginNote').textContent = '登入服務載入失敗，先用訪客身分遊玩。'; }
+  } catch (e) { /* 登入服務載入失敗：只留「開始」按鈕 */ }
 })();
 const AUTH_ERR = {
   'auth/invalid-email': 'Email 格式不對', 'auth/missing-password': '請輸入密碼', 'auth/invalid-credential': 'Email 或密碼不對',
@@ -835,7 +835,7 @@ function clearBattle() {
 }
 function dieGame() { setPhase('dead'); S.grayTarget = 1; stopVoice(); for (const f of fireballs) removeFireball(f); fireballs.length = 0; }
 function winGame() { setPhase('won'); stopVoice(); SFX.gong(null, 1.2); removeDragon(); }
-function backToStart() {       // 「再一次」：回到建模完成、按鈕亮起的畫面（模型保留，不用重掃）
+function backToStart() {       // 「再一回合」：回到建模完成、按鈕亮起的畫面（模型保留，不用重掃）
   clearBattle(); S.grayTarget = 0; U.gray.value = 0; S.hp = S.maxHP; renderHP(0);
   setPhase('ready'); $('startBtn').disabled = !scan.done;
 }
@@ -1024,14 +1024,14 @@ $('arBtn').addEventListener('click', async () => {
   enterPlay('xr');
   scan.minCells = depthOn ? 60 : 20; S.needOrigin = true;
 });
-function onSessionEnd() { session = null; hitSource = null; glBinding = null; depthOn = false; goHome(); }
+function onSessionEnd() { session = null; hitSource = null; glBinding = null; depthOn = false; goHome(); if (storyAfterExit) { storyAfterExit = false; startStory(); } }
 $('exitBtn').addEventListener('click', () => { if (session) session.end(); else goHome(); });
 /* 法輪功大事記：
    1. 有些網站主機會替網頁加上「沙箱」限制（window.origin 會變成 'null'），
       從沙箱網頁開出去的新分頁也會被鎖住，文章網頁的程式不能跑，就會一直轉圈。
    2. AR 模式還開著時，相機佔住畫面，新分頁也出不來。
    這兩種情況都改成「在同一個分頁打開」（AR 先關掉）；其他情況照常開新分頁。 */
-$('chronicle').addEventListener('click', e => {
+for (const el of document.querySelectorAll('a.ext')) el.addEventListener('click', e => {
   const sandboxed = window.origin === 'null';
   if (!session && !sandboxed) return;
   e.preventDefault();
@@ -1041,6 +1041,13 @@ $('chronicle').addEventListener('click', e => {
   session.addEventListener('end', () => setTimeout(go, 50), { once: true });
   session.end().catch(go);
   setTimeout(go, 1500);
+});
+/* 失敗畫面「再看一次故事」：先離開 AR／模擬場景，再從頭播故事 */
+let storyAfterExit = false;
+$('againStory').addEventListener('click', () => {
+  initAudio();
+  if (session) { storyAfterExit = true; session.end().catch(() => { if (storyAfterExit) { storyAfterExit = false; goHome(); startStory(); } }); }
+  else { goHome(); startStory(); }
 });
 function goHome() {
   clearBattle(); stopVoice(); S.mode = 'none'; setPhase('none'); U.gray.value = 0;

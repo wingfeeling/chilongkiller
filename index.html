@@ -155,7 +155,7 @@ canvas.gl{position:fixed;inset:0;width:100%;height:100%;display:none;touch-actio
 @keyframes fadein{from{opacity:0}}
 #dead h2{margin:0;font-family:var(--serif);font-weight:900;font-size:clamp(34px,10vw,54px);letter-spacing:.18em;color:#e8e8e8;text-shadow:0 3px 12px #000}
 #dead h2 small{display:block;font-size:13px;letter-spacing:.5em;color:#9a9a9a;margin-top:14px;font-weight:500}
-#again{min-width:200px;min-height:56px;border-radius:3px;border:1px solid #bbb;background:rgba(0,0,0,.5);color:#fff;font-family:var(--serif);font-weight:900;font-size:20px;letter-spacing:.3em}
+#again,#againStory{min-width:200px;min-height:56px;border-radius:3px;border:1px solid #bbb;background:rgba(0,0,0,.5);color:#fff;font-family:var(--serif);font-weight:900;font-size:20px;letter-spacing:.3em}
 #won{background:radial-gradient(circle at 50% 45%,rgba(255,236,170,.3),rgba(8,10,16,.72) 70%)}
 #won{padding:24px 22px;gap:28px;overflow-y:auto}
 #won h2{margin:0;font-family:var(--serif);font-weight:900;font-size:clamp(56px,17vw,96px);letter-spacing:.24em;text-indent:.24em;color:var(--gold-hi);text-shadow:0 0 30px rgba(255,236,170,.8),0 3px 8px #000}
@@ -165,8 +165,17 @@ canvas.gl{position:fixed;inset:0;width:100%;height:100%;display:none;touch-actio
 #won p.copy{margin-top:0;font-family:inherit;font-weight:400;font-size:12px;color:rgba(255,240,210,.6);letter-spacing:.06em}
 #won .row{gap:10px;display:flex}
 #won button,#won a{min-height:52px;padding:0 22px;border-radius:3px;border:1px solid var(--gold);background:rgba(0,0,0,.5);font-size:16px;color:var(--paper);display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+#won .ext,#dead .ext{min-width:min(78vw,300px);min-height:54px}
 #won #chronicle{background:linear-gradient(180deg,#f7da8c,#c38c2a);color:#1d1404;border-color:#fff1c0;font-family:var(--serif);font-weight:900;font-size:19px;letter-spacing:.12em;box-shadow:0 0 30px rgba(255,226,150,.6)}
 #won .col{display:flex;flex-direction:column;gap:12px;align-items:center}
+#won .jiuping,#dead .jiuping{border-color:#7fb4e8;background:linear-gradient(180deg,rgba(38,82,140,.85),rgba(14,34,66,.9));color:#eaf4ff;font-family:var(--serif);font-weight:900;font-size:19px;letter-spacing:.12em;box-shadow:0 0 24px rgba(120,180,240,.35);display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:0 22px;border-radius:3px;border-style:solid;border-width:1px}
+#dead{gap:30px;padding:24px 18px}
+#dead .col{display:flex;flex-direction:column;gap:12px;align-items:center;width:min(100%,420px)}
+#dead .row{display:flex;gap:10px;width:100%}
+#dead .row>*{flex:1;min-width:0}
+#dead #again,#dead #againStory{min-width:0;min-height:56px;padding:0 8px;font-size:18px;letter-spacing:.12em}
+#dead .chronicle{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:0 12px;border-radius:3px;border:1px solid #fff1c0;background:linear-gradient(180deg,#f7da8c,#c38c2a);color:#1d1404;font-family:var(--serif);font-weight:900;font-size:18px;letter-spacing:.1em;box-shadow:0 0 24px rgba(255,226,150,.45)}
+#dead .ext{min-width:0;min-height:54px;font-size:17px;padding:0 8px}
 /* 密技回血的金光 */
 #heal{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse 80% 70% at 50% 55%,rgba(255,240,180,.45),rgba(255,210,110,.18) 55%,rgba(255,200,80,0) 80%)}
 
@@ -214,22 +223,66 @@ canvas.gl{position:fixed;inset:0;width:100%;height:100%;display:none;touch-actio
 #micHelp .act{display:flex;flex-direction:column;gap:10px}
 .sitecopy{position:fixed;left:0;right:0;bottom:calc(4px + var(--safe-b));z-index:20;text-align:center;font-size:11px;color:rgba(255,240,210,.5);pointer-events:none;letter-spacing:.06em}
 body.playing .sitecopy,body.story .sitecopy{display:none}
+/* ---------- 首頁主視覺：滅邪劍、劍鞘、九評共產黨（img/hero.jpg）＋會動的金光 ---------- */
+#loginScr{background:#0b0807}
+.hero-art{--ah:min(calc(66vh - 44px),600px);--aw:calc(var(--ah) * 1.7768);position:relative;height:calc(var(--ah) + 44px);overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 82%,transparent 100%);mask-image:linear-gradient(to bottom,#000 0,#000 82%,transparent 100%)}
+.hero-art .art{position:absolute;bottom:0;left:50%;width:var(--aw);height:var(--ah);transform:translateX(-49%);
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 12%,#000 88%,transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 12%,#000 88%,transparent 100%)}
+.hero-art::after{content:"";position:absolute;left:0;right:0;top:0;height:calc(44px + var(--ah) * .12);pointer-events:none;background:linear-gradient(to bottom,#0b0807 0,#0b0807 44px,rgba(11,8,7,0) 100%)}
+@media (max-width:700px){.hero-art{--aw:200vw;--ah:calc(200vw / 1.7768)}.hero-art .art{-webkit-mask-image:none;mask-image:none}}
+.art img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.art>i,.a-sparks{position:absolute;pointer-events:none;mix-blend-mode:screen}
+.a-glow{left:57%;top:21%;width:34%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,238,170,.85),rgba(255,196,80,.35) 40%,rgba(255,170,40,0) 72%);animation:aglow 3.4s ease-in-out infinite}
+@keyframes aglow{0%,100%{opacity:.25;scale:.9}50%{opacity:.55;scale:1.08}}
+.a-rays{left:57%;top:21%;width:70%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;opacity:.5;
+  background:repeating-conic-gradient(from 0deg,rgba(255,215,120,.55) 0deg 2.2deg,transparent 2.2deg 11deg);
+  -webkit-mask:radial-gradient(closest-side,#000 6%,rgba(0,0,0,.45) 35%,transparent 70%);mask:radial-gradient(closest-side,#000 6%,rgba(0,0,0,.45) 35%,transparent 70%);
+  animation:arays 60s linear infinite}
+@keyframes arays{to{rotate:360deg}}
+.a-sheen{left:55.3%;top:1.5%;width:3.4%;height:50%;clip-path:polygon(50% 0,100% 6%,100% 100%,0 100%,0 6%);overflow:hidden}
+.a-sheen::before{content:"";position:absolute;left:0;right:0;top:-30%;height:30%;background:linear-gradient(to bottom,transparent,rgba(255,250,220,.95),transparent);animation:asheen 4s ease-in-out infinite}
+@keyframes asheen{0%{transform:translateY(0)}55%,100%{transform:translateY(440%)}}
+.a-sparks{inset:0;overflow:hidden}
+.a-sparks i{position:absolute;bottom:8%;width:.32%;aspect-ratio:1;min-width:3px;border-radius:50%;background:#ffe2a0;box-shadow:0 0 8px 2px rgba(255,200,100,.8);opacity:0;animation:aspark 6s linear infinite}
+.a-sparks i:nth-child(1){left:50%}.a-sparks i:nth-child(2){left:62%;animation-delay:.7s;animation-duration:7s}
+.a-sparks i:nth-child(3){left:44%;animation-delay:1.4s}.a-sparks i:nth-child(4){left:66%;animation-delay:2.1s;animation-duration:5.2s}
+.a-sparks i:nth-child(5){left:55%;animation-delay:2.8s}.a-sparks i:nth-child(6){left:38%;animation-delay:3.5s;animation-duration:6.8s}
+.a-sparks i:nth-child(7){left:70%;animation-delay:4.2s}.a-sparks i:nth-child(8){left:59%;animation-delay:4.9s;animation-duration:5.6s}
+.a-sparks i:nth-child(9){left:47%;animation-delay:1.1s;animation-duration:7.4s}.a-sparks i:nth-child(10){left:64%;animation-delay:.3s;animation-duration:6.2s}
+.a-sparks i:nth-child(11){left:52%;animation-delay:3.1s;animation-duration:5.4s}.a-sparks i:nth-child(12){left:41%;animation-delay:5.3s}
+@keyframes aspark{0%{opacity:0;transform:translate(0,0)}12%{opacity:1}100%{opacity:0;transform:translate(1.4vw,calc(var(--ah) * -.7))}}
+.hero-kicker{z-index:2;position:absolute;top:calc(16px + var(--safe-t));left:0;right:0;justify-content:center;margin:0;text-shadow:0 1px 4px #000}
+.hero-kicker::after{display:none}
+.hero-wrap{min-height:auto;margin-top:-50px;padding-top:0;padding-bottom:calc(44px + var(--safe-b));text-align:center;z-index:2}
+.hero-t{font-family:var(--serif);font-weight:900;font-size:clamp(52px,15vw,76px);line-height:1.05;margin:0;letter-spacing:.22em;text-indent:.22em;
+  background:linear-gradient(180deg,#fff6dc 10%,#f4cf74 55%,#b97c1e 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.9)) drop-shadow(0 0 22px rgba(255,200,100,.35))}
+.hero-t em{font-style:normal}
+.hero-lede{font-family:var(--serif);font-weight:500;font-size:clamp(14px,3.9vw,17px);line-height:1.8;margin:8px 0 0;color:var(--paper-dim);letter-spacing:.12em}
+.btn.go{min-height:60px;font-size:24px;letter-spacing:.6em;text-indent:.6em;box-shadow:0 0 0 3px rgba(244,207,116,.2),0 0 34px rgba(255,214,120,.45);animation:breath 2.2s ease-in-out infinite}
+.hero-wrap .panel{margin-top:0;padding-top:22px}
+#loginScr .note:empty{display:none}
+@media (prefers-reduced-motion:reduce){.a-glow,.a-rays,.a-sheen::before,.a-sparks i,.btn.go{animation:none}}
 @media (prefers-reduced-motion:reduce){#startBtn:not(:disabled),#beginBtn{animation:none}}
 </style>
 </head>
 <body>
 
-<!-- 登入 -->
+<!-- 登入（首頁） -->
 <section id="loginScr" class="screen show" aria-labelledby="t1">
-  <div class="wrap">
-    <p class="kicker">實境擴增場域座標系統</p>
-    <div class="title">
-      <h1 id="t1">赤<em>龍</em>斬</h1>
-      <div class="lede">
-        <div class="seal" aria-hidden="true">滅<br>邪</div>
-        <h2 style="margin-top:22px">以周遭真實景物為座標，<br>在你眼前斬龍。</h2>
-      </div>
+  <div class="hero-art" role="img" aria-label="出鞘的滅邪古劍放出金光，旁邊是劍鞘與《九評共產黨》">
+    <div class="art">
+      <img src="img/hero.jpg" alt="" fetchpriority="high">
+      <i class="a-rays"></i><i class="a-glow"></i><i class="a-sheen"></i>
+      <span class="a-sparks"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
     </div>
+    <p class="kicker hero-kicker">實境擴增場域座標系統</p>
+  </div>
+  <div class="wrap hero-wrap">
+    <h1 id="t1" class="hero-t">赤<em>龍</em>斬</h1>
+    <p class="hero-lede">持滅邪之劍，明九評之理<br>以周遭真實景物為座標，在你眼前斬龍</p>
     <form class="panel" id="loginForm" novalidate>
       <div id="fbArea" style="display:none;flex-direction:column;gap:12px">
         <button type="button" class="btn" id="gLogin">用 Google 帳號登入</button>
@@ -239,7 +292,7 @@ body.playing .sitecopy,body.story .sitecopy{display:none}
         <div class="row"><button type="submit" class="btn primary" id="eLogin">登入</button><button type="button" class="btn" id="eSignup">註冊</button></div>
         <div class="or">或</div>
       </div>
-      <button type="button" class="btn ghost" id="guest">以訪客身分進入</button>
+      <button type="button" class="btn primary go" id="guest">開始</button>
       <div class="err" id="loginErr" role="alert"></div>
       <p class="note" id="loginNote"></p>
     </form>
@@ -338,9 +391,11 @@ body.playing .sitecopy,body.story .sitecopy{display:none}
   <button id="startBtn" disabled>赤龍斬行動開始</button>
   <button id="mic" aria-pressed="false"><i></i><span id="micTxt">語音：關</span></button>
   <div id="skill"><button id="swordBtn" aria-label="施放御劍術"><span class="cd" id="swordCd"></span><b>御劍術</b><span class="sec" id="swordSec"></span></button><small>說「御劍術」</small></div>
-  <div id="dead" role="alertdialog" aria-labelledby="deadT"><h2 id="deadT">你被迫害死了<small>GAME OVER</small></h2><button id="again">再一次</button></div>
+  <div id="dead" role="alertdialog" aria-labelledby="deadT"><h2 id="deadT">你被迫害死了<small>GAME OVER</small></h2>
+    <div class="col"><div class="row"><button id="again">再一回合</button><button id="againStory">再看一次故事</button></div>
+      <div class="row"><a class="ext chronicle" href="https://www.ntdtv.com/gb/2024/07/19/a103898587.html" target="_blank" rel="noopener">法輪功大事記</a><a class="ext jiuping" href="https://www.youtube.com/playlist?list=PLaF6XA2KQtwTRRE7M1jObZOQZVBWcRGO4" target="_blank" rel="noopener">九評共產黨</a></div></div></div>
   <div id="won" role="alertdialog" aria-labelledby="wonT"><h2 id="wonT">赤龍斬</h2><p>感謝勇者願意站出來一起斬除邪龍，但在現實中，中共現在仍在迫害<span class="nw">大法弟子。</span></p><p>您要能了解法輪功真相是大法弟子的<span class="nw">願望，</span>希望您可以花一點時間看一下<span class="nw">法輪功大事記。</span></p>
-    <div class="col"><a id="chronicle" href="https://www.ntdtv.com/gb/2024/07/19/a103898587.html" target="_blank" rel="noopener">法輪功大事記</a></div>
+    <div class="col"><a id="chronicle" class="ext chronicle" href="https://www.ntdtv.com/gb/2024/07/19/a103898587.html" target="_blank" rel="noopener">法輪功大事記</a><a class="ext jiuping" href="https://www.youtube.com/playlist?list=PLaF6XA2KQtwTRRE7M1jObZOQZVBWcRGO4" target="_blank" rel="noopener">九評共產黨</a></div>
     <p class="copy">© 2026 wingfeeling　版權所有</p></div>
 </div>
 
